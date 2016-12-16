@@ -9,6 +9,8 @@ graphs of objects is a primary cause of insanely slow test suites. This project
 can help you diagnose where you're doing the most damage so that you can
 start to fix it.
 
+This library plays nicely with DatabaseCleaner.
+
 Installation
 ------------
 
@@ -28,6 +30,14 @@ The current answer appears to be changing your `.rspec` initializer to include t
 We have to include the rails_helper so that ActiveRecord is loaded prior to trying to load the
 formatter. That way, we can hook into AR creations.
 
+Once you set the formatter, you should now see the number of objects created and total queries
+for each of your tests:
+
+![Tests with AR annotations.](https://github.com/jmmastey/rspec-activerecord-formatter/raw/master/doc/images/demo_2.png "Tests with AR annotations.")
+
+You'll also get a summary at the end of your test run:
+
+![Test summary.](https://github.com/jmmastey/rspec-activerecord-formatter/raw/master/doc/images/demo_1.png "Test summary.")
 
 Contributing
 ------------
