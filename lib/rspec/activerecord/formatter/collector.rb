@@ -1,59 +1,54 @@
+require 'active_support/notifications'
+
 module ActiveRecordFormatter
   class Collector
+    attr_reader :query_count, :objects_count, :total_queries, :total_objects
     SKIP_QUERIES = ["SELECT tablename FROM pg_tables", "select sum(ct) from (select count(*) ct from"]
 
-    @@total_queries = 0
-    @@query_count   = 0
-    @@total_objects = 0
+    def initialize
+      @query_count    = 0
+      @objects_count  = 0
+      @total_queries  = 0
+      @total_objects  = 0
 
-    @@show_queries  = false
-    @@ar_queries    = []
-
-    def self.init
       ActiveSupport::Notifications.subscribe("sql.active_record", method(:record_query))
-
-      @@total_objects = 0
-      @@total_queries = 0
     end
 
-    def self.active_record_count
-      tables =  (ActiveRecord::Base.connection.tables - ["ar_internal_metadata", "schema_migrations"])
-      rows   = tables.map { |t| "select count(*) ct from #{t}" }.join(" union ")
-      value  = "select sum(ct) from (#{rows}) t"
-
-      response = ActiveRecord::Base.connection.execute(value)
-      response.to_a.first["sum"].to_i
-    end
-
-    def self.record_query(*_unused, data)
+    def record_query(*_unused, data)
       return if SKIP_QUERIES.any? { |q| data[:sql].index(q) == 0 }
 
-      @@query_count +=1
-      @@ar_queries << [data[:name], data[:sql]].compact.join(": ") if @@show_queries
+      @query_count    += 1
+      @total_queries  += 1
+
+      if query_is_an_insert?(data[:sql])
+        @objects_count  += 1
+        @total_objects  += 1
+      end
     end
 
-    def self.example_counts(suffix: " ")
-      output = "(%02d, %02d)#{suffix}" % [active_record_count, @@query_count]
-
-      @@total_objects += active_record_count
-      @@total_queries += @@query_count
-
-      # TODO is there a sane way to do this?
-      #pp @@ar_queries if @@show_queries
-      @@ar_queries = []
-      output
+    def reset_example
+      @query_count   = 0
+      @objects_count = 0
     end
 
-    def self.reset_example
-      @@query_count = 0
-    end
+    protected
 
-    def self.totals_line
-      "#{@@total_objects} AR objects, #{@@total_queries} AR queries"
-    end
-
-    def self.show_ar_queries
-      @@show_queries = true
+    # TODO: what happens if we try to create many records at once?
+    # TODO: are there any false positives we need to worry about? false negatives?
+    def query_is_an_insert?(query)
+      query =~ /INSERT INTO/
     end
   end
 end
+
+# This is actually a really nice way to count records, but sadly
+# we have no way to hook a before action that preceeds DatabaseCleaner.
+# That makes it awfully tough to count anything at all.
+# def self.active_record_count
+#   tables =  (ActiveRecord::Base.connection.tables - ["ar_internal_metadata", "schema_migrations"])
+#   rows   = tables.map { |t| "select count(*) ct from #{t}" }.join(" union ")
+#   value  = "select sum(ct) from (#{rows}) t"
+#
+#   response = ActiveRecord::Base.connection.execute(value)
+#   response.to_a.first["sum"].to_i
+# end

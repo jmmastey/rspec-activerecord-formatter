@@ -1,23 +1,23 @@
 module ActiveRecordFormatter
   class Formatter < ::RSpec::Core::Formatters::DocumentationFormatter
-    # This registers the notifications this formatter supports, and tells
-    # us that this was written against the RSpec 3.x formatter API.
-    ::RSpec::Core::Formatters.register self, :example_started, :example_passed,
-      :example_failed, :start, :dump_summary
+    attr_reader :collector, :colorizer, :configuration
+
+    ::RSpec::Core::Formatters.register self, :start, :dump_summary,
+                                             :example_started, :example_passed, :example_failed
 
     def initialize(output)
       super
-      @colorizer = ::RSpec::Core::Formatters::ConsoleCodes
+
+      @colorizer      = ::RSpec::Core::Formatters::ConsoleCodes
+      @collector      = ActiveRecordFormatter::Collector.new
     end
 
     def start(start_notification)
-      ActiveRecordFormatter::Collector.init
-
       output.puts "Recording and reporting ActiveRecord select and creation counts."
     end
 
     def example_started(example)
-      ActiveRecordFormatter::Collector.reset_example
+      collector.reset_example
     end
 
     def dump_summary(summary)
@@ -26,7 +26,7 @@ module ActiveRecordFormatter
         "#{colorized_expanded_totals(summary)}\n"
 
       unless summary.failed_examples.empty?
-        formatted << summary.colorized_rerun_commands(@colorizer) << "\n"
+        formatted << summary.colorized_rerun_commands(colorizer) << "\n"
       end
 
       output.puts formatted
@@ -35,23 +35,26 @@ module ActiveRecordFormatter
     protected
 
     def passed_output(example)
-      "#{current_indentation}#{ActiveRecordFormatter::Collector.example_counts}" +
-        @colorizer.wrap(example.description.strip, :success)
+      "#{current_indentation}#{example_counts}" +
+        colorizer.wrap(example.description.strip, :success)
     end
 
     def failure_output(example)
-      "#{current_indentation}#{ActiveRecordFormatter::Collector.example_counts}" +
-        @colorizer.wrap("#{example.description.strip} (FAILED - #{next_failure_index})", :failure)
+      "#{current_indentation}#{example_counts}" +
+        colorizer.wrap("#{example.description.strip} (FAILED - #{next_failure_index})", :failure)
     end
 
+    def example_counts(suffix: " ")
+      "(%02d, %02d)#{suffix}" % [collector.objects_count, collector.query_count]
+    end
 
     def colorized_expanded_totals(summary)
       if summary.failure_count > 0
-        @colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.failure_color)
+        colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.failure_color)
       elsif summary.pending_count > 0
-        @colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.pending_color)
+        colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.pending_color)
       else
-        @colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.success_color)
+        colorizer.wrap(expanded_totals_line(summary), RSpec.configuration.success_color)
       end
     end
 
@@ -59,8 +62,10 @@ module ActiveRecordFormatter
       summary_text = ::RSpec::Core::Formatters::Helpers.pluralize(summary.example_count, "example")
       summary_text << ", " << ::RSpec::Core::Formatters::Helpers.pluralize(summary.failure_count, "failure")
       summary_text << ", #{summary.pending_count} pending" if summary.pending_count > 0
+      summary_text << ", #{collector.total_objects} AR objects"
+      summary_text << ", #{collector.total_queries} AR queries"
 
-      [summary_text, ActiveRecordFormatter::Collector.totals_line].compact.join(", ")
+      summary_text
     end
   end
 end
