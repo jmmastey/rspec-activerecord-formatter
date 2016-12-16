@@ -39,6 +39,13 @@ You'll also get a summary at the end of your test run:
 
 ![Test summary.](https://github.com/jmmastey/rspec-activerecord-formatter/raw/master/doc/images/demo_1.png "Test summary.")
 
+Next Steps
+------------
+* The method I was using to count AR objects doesn't work well with DatabaseCleaner when not explicitly wiring the library into `before` blocks.
+  I'd like to be able to go back to a method other than scanning for `INSERT INTO` strings.
+* Configuration, especially of the aligning of the metric output (to outdent it optionally).
+* Add a `--profile`-like behavior to output the most offending tests.
+
 Contributing
 ------------
 
@@ -47,6 +54,6 @@ Contributions are very welcome. Fork, fix, submit pulls.
 Contribution is expected to conform to the [Contributor Covenant](https://github.com/jmmastey/bundler-stats/blob/master/CODE_OF_CONDUCT.md).
 
 License
--------
+------------
 
 This software is released under the [MIT License](https://github.com/jmmastey/bundler-stats/blob/master/MIT-LICENSE).
