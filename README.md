@@ -45,6 +45,8 @@ Next Steps
   I'd like to be able to go back to a method other than scanning for `INSERT INTO` strings.
 * Configuration, especially of the aligning of the metric output (to outdent it optionally).
 * Add a `--profile`-like behavior to output the most offending tests.
+* Current dependencies are a vague guess. They could clearly be more lenient, but I don't have time at the moment to look into which version of ActiveSupport, for instance, is required.
+* I dunno, tests.
 
 Contributing
 ------------
