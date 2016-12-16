@@ -27,6 +27,7 @@ Gem::Specification.new do |gem|
 
   gem.require_paths = %w[ext lib].select { |dir| File.directory?(dir) }
 
+  # TODO: these are almost certainly too restrictive.
   gem.add_dependency "bundler", "~> 1.9"
   gem.add_dependency "activesupport", ">= 4.0"
   gem.add_dependency "rspec", "~> 3.4"
