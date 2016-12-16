@@ -51,9 +51,9 @@ Contributing
 
 Contributions are very welcome. Fork, fix, submit pulls.
 
-Contribution is expected to conform to the [Contributor Covenant](https://github.com/jmmastey/bundler-stats/blob/master/CODE_OF_CONDUCT.md).
+Contribution is expected to conform to the [Contributor Covenant](https://github.com/jmmastey/rspec-activerecord-formatter/blob/master/CODE_OF_CONDUCT.md).
 
 License
 ------------
 
-This software is released under the [MIT License](https://github.com/jmmastey/bundler-stats/blob/master/MIT-LICENSE).
+This software is released under the [MIT License](https://github.com/jmmastey/rspec-activerecord-formatter/blob/master/MIT-LICENSE).
