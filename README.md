@@ -1,6 +1,9 @@
 RSpec Active Record Formatter
 =============
 
+[![Build Status](https://travis-ci.org/jmmastey/rspec-activerecord-formatter.svg?branch=master)](https://travis-ci.org/jmmastey/rspec-activerecord-formatter)
+[![Coverage Status](https://coveralls.io/repos/github/jmmastey/rspec-activerecord-formatter/badge.svg?branch=master)](https://coveralls.io/github/jmmastey/rspec-activerecord-formatter?branch=master)
+
 Adds a new formatting option to rspec that counts your ActiveRecord queries
 and object creations.
 
