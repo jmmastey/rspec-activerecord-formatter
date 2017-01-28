@@ -25,7 +25,7 @@ Normal bundle stuff.
 Usage
 ------------
 
-The current answer appears to be changing your `.rspec` initializer to include the following:
+The current answer is to change your `.rspec` initializer to include the following:
 
       --require rails_helper
       --format ActiveRecordFormatter
