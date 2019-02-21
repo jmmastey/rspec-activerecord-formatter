@@ -3,12 +3,10 @@
 lib_dir = File.join(File.dirname(__FILE__),'lib')
 $LOAD_PATH << lib_dir unless $LOAD_PATH.include?(lib_dir)
 
-require 'rspec/activerecord/formatter/version'
-
 Gem::Specification.new do |gem|
 
   gem.name    = "rspec-activerecord-formatter"
-  gem.version = ActiveRecordFormatter::VERSION
+  gem.version = "0.2.0"
 
   gem.summary     = "Adds object creations and queries to Rspec output."
   gem.description = "Creates a new formatter for ActiveRecord that can help you diagnose performance issues in RSpec"

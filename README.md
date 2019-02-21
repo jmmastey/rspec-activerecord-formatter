@@ -1,9 +1,6 @@
 RSpec Active Record Formatter
 =============
 
-[![Build Status](https://travis-ci.org/jmmastey/rspec-activerecord-formatter.svg?branch=master)](https://travis-ci.org/jmmastey/rspec-activerecord-formatter)
-[![Coverage Status](https://coveralls.io/repos/github/jmmastey/rspec-activerecord-formatter/badge.svg?branch=master)](https://coveralls.io/github/jmmastey/rspec-activerecord-formatter?branch=master)
-
 Adds a new formatting option to rspec that counts your ActiveRecord queries
 and object creations.
 
@@ -27,11 +24,15 @@ Usage
 
 The current answer is to change your `.rspec` initializer to include the following:
 
-      --require rails_helper
-      --format ActiveRecordFormatter
+    --require rails_helper
+    --format ActiveRecordFormatter
 
 We have to include the rails_helper so that ActiveRecord is loaded prior to trying to load the
 formatter. That way, we can hook into AR creations.
+
+You can also run the formatter as a one-off option to rspec:
+
+    rspec path/to/example_spec.rb --require rails_helper --format ActiveRecordFormatter
 
 Once you set the formatter, you should now see the number of objects created and total queries
 for each of your tests:

@@ -1,0 +1,1 @@
+require 'rspec/activerecord/formatter'

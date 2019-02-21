@@ -1,6 +1,6 @@
 require 'active_support/notifications'
 
-module ActiveRecordFormatter
+module ActiveRecordFormatterHelpers
   class Collector
     attr_reader :query_count, :objects_count, :total_queries, :total_objects
     SKIP_QUERIES = ["SELECT tablename FROM pg_tables", "select sum(ct) from (select count(*) ct from"]
