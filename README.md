@@ -14,9 +14,10 @@ This library plays nicely with DatabaseCleaner.
 Installation
 ------------
 
-Normal bundle stuff.
+Normal bundle stuff. You'll almost certainly need to add this gem to your
+bundle at least temporarily, since you'll be running rspec using bundler.
 
-    gem rspec-activerecord-formatter
+    gem 'rspec-activerecord-formatter'
 
 
 Usage
