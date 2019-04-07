@@ -1,2 +1,2 @@
-RSpec.describe ActiveRecordFormatter::Collector do
+RSpec.describe ActiveRecordFormatterHelpers::Collector do
 end

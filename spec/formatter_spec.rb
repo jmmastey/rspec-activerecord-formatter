@@ -1,2 +1,2 @@
-RSpec.describe ActiveRecordFormatter::Formatter do
+RSpec.describe ActiveRecordFormatter do
 end
