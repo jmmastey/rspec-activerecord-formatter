@@ -31,6 +31,16 @@ class ActiveRecordFormatter < ::RSpec::Core::Formatters::DocumentationFormatter
     end
 
     output.puts formatted
+    output.puts record_type_summaries
+  end
+
+  def record_type_summaries
+    summary = ["", "Summary of Queries"]
+    collector.most_common_query_names.each do |name, count|
+      summary << "%-4s %s" % [count, name]
+    end
+
+    summary.join("\n")
   end
 
   protected

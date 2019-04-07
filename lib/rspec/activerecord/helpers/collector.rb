@@ -2,7 +2,7 @@ require 'active_support/notifications'
 
 module ActiveRecordFormatterHelpers
   class Collector
-    attr_reader :query_count, :objects_count, :total_queries, :total_objects
+    attr_reader :query_count, :objects_count, :total_queries, :total_objects, :query_names
     SKIP_QUERIES = ["SELECT tablename FROM pg_tables", "select sum(ct) from (select count(*) ct from"]
 
     def initialize
@@ -10,6 +10,7 @@ module ActiveRecordFormatterHelpers
       @objects_count  = 0
       @total_queries  = 0
       @total_objects  = 0
+      @query_names    = Hash.new(0)
 
       ActiveSupport::Notifications.subscribe("sql.active_record", method(:record_query))
     end
@@ -24,6 +25,13 @@ module ActiveRecordFormatterHelpers
         @objects_count  += 1
         @total_objects  += 1
       end
+
+      name = data[:name] || "Unnamed"
+      @query_names[name] += 1
+    end
+
+    def most_common_query_names
+      @query_names.sort_by(&:last).reverse
     end
 
     def reset_example
