@@ -4,7 +4,8 @@ class ActiveRecordFormatter < ::RSpec::Core::Formatters::DocumentationFormatter
   attr_reader :collector, :colorizer, :configuration
 
   ::RSpec::Core::Formatters.register self, :start, :dump_summary,
-                                           :example_started, :example_passed, :example_failed
+                                           :example_started, :example_group_started,
+                                           :example_group_finished
 
   def initialize(output)
     super
@@ -17,8 +18,18 @@ class ActiveRecordFormatter < ::RSpec::Core::Formatters::DocumentationFormatter
     output.puts "Recording and reporting ActiveRecord select and creation counts."
   end
 
+  def example_group_started(example_group)
+    collector.group_started(example_group.group)
+    super
+  end
+
+  def example_group_finished(example_group)
+    collector.group_finished(example_group.group)
+    super
+  end
+
   def example_started(example)
-    collector.reset_example
+    collector.reset_example(example)
   end
 
   def dump_summary(summary)
@@ -35,15 +46,25 @@ class ActiveRecordFormatter < ::RSpec::Core::Formatters::DocumentationFormatter
   end
 
   def write_profile_summary
-    output_report_filename = Time.now.strftime("rspec_activerecord_result_%Y_%m_%d_%H_%m_%S.txt")
-    output_report_path = Rails.root.join("tmp", output_report_filename)
+    output_report_filename = Time.now.strftime("ar_%Y_%m_%d_%H_%m_%S.txt")
+    report_dir = Rails.root.join("tmp", "profile")
+    output_report_path = report_dir.join(output_report_filename)
 
-    puts "\nOutputting Detailed Profile Data to #{output_report_path}"
+    output.puts "\nOutputting Detailed Profile Data to #{output_report_path}"
+    Dir.mkdir(report_dir) unless File.exists?(report_dir)
     File.open(output_report_path, "wb") do |f|
-      f.puts "#{collector.total_objects} AR objects, #{collector.total_queries} AR queries\n"
-      f.puts "Query Summary"
-      collector.most_common_query_names.each do |name, count|
-        f.puts "%-4s %s" % [count, name]
+      f.puts "#{collector.total_objects} AR objects, #{collector.total_queries} AR queries"
+
+      f.puts ""
+      f.puts "Worst Example Groups by Object Creation"
+      collector.most_expensive_groups.first(50).each do |name, count|
+        f.puts "%-5s %s" % [count, name]
+      end
+
+      f.puts ""
+      f.puts "Most Common Queries"
+      collector.most_common_query_names.first(50).each do |name, count|
+        f.puts "%-5s %s" % [count, name]
       end
     end
   end
