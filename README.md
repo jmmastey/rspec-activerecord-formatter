@@ -17,7 +17,7 @@ Installation
 Normal bundle stuff. You'll almost certainly need to add this gem to your
 bundle at least temporarily, since you'll be running rspec using bundler.
 
-    gem 'rspec-activerecord-formatter'
+    gem 'rspec-activerecord-formatter', require: false
 
 
 Usage
@@ -25,6 +25,7 @@ Usage
 
 The current answer is to change your `.rspec` initializer to include the following:
 
+    --require rspec-activerecord-formatter
     --require rails_helper
     --format ActiveRecordFormatter
 
@@ -33,7 +34,7 @@ formatter. That way, we can hook into AR creations.
 
 You can also run the formatter as a one-off option to rspec:
 
-    rspec path/to/example_spec.rb --require rails_helper --format ActiveRecordFormatter
+    rspec path/to/example_spec.rb --require rspec-activerecord-formatter --require rails_helper --format ActiveRecordFormatter
 
 Once you set the formatter, you should now see the number of objects created and total queries
 for each of your tests:

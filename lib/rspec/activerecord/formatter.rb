@@ -31,16 +31,21 @@ class ActiveRecordFormatter < ::RSpec::Core::Formatters::DocumentationFormatter
     end
 
     output.puts formatted
-    output.puts record_type_summaries
+    write_profile_summary
   end
 
-  def record_type_summaries
-    summary = ["", "Summary of Queries"]
-    collector.most_common_query_names.each do |name, count|
-      summary << "%-4s %s" % [count, name]
-    end
+  def write_profile_summary
+    output_report_filename = Time.now.strftime("rspec_activerecord_result_%Y_%m_%d_%H_%m_%S.txt")
+    output_report_path = Rails.root.join("tmp", output_report_filename)
 
-    summary.join("\n")
+    puts "\nOutputting Detailed Profile Data to #{output_report_path}"
+    File.open(output_report_path, "wb") do |f|
+      f.puts "#{collector.total_objects} AR objects, #{collector.total_queries} AR queries\n"
+      f.puts "Query Summary"
+      collector.most_common_query_names.each do |name, count|
+        f.puts "%-4s %s" % [count, name]
+      end
+    end
   end
 
   protected
