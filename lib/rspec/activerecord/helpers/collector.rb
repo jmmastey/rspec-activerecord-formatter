@@ -69,6 +69,16 @@ module ActiveRecordFormatterHelpers
     def inc_query_name(data)
       name = data[:name] || "Unnamed"
 
+      # In older versions of Rails, insert statements are just counted as SQL
+      # queries, which means that all the queries are just bunchedup at the top.
+      # Makes this data pretty useless. So anyway, try to suss out a name for
+      # at least those insertions (which are much more frequent than, say,
+      # updates in a test suite anyway).
+      if data[:name] == "SQL" && query_is_an_insert?(data[:sql])
+        table = data[:sql].scan(/INSERT INTO "(\w+)"/).first.first
+        name = "#{table} Create"
+      end
+
       query_names[name] += 1
     end
 
