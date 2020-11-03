@@ -3,12 +3,14 @@ require 'active_support/notifications'
 module ActiveRecordFormatterHelpers
   class Collector
     attr_reader :query_count, :objects_count, :total_queries, :total_objects,
-                :query_names, :active_groups, :group_counts
+                :query_names, :active_groups, :group_counts, :groups_encountered
 
     SKIP_QUERIES = ["SELECT tablename FROM pg_tables", "select sum(ct) from (select count(*) ct from"]
 
     def initialize
+      #@unnamed_queries = []
       @query_count    = 0
+      @groups_encountered = 0
       @objects_count  = 0
       @total_queries  = 0
       @total_objects  = 0
@@ -41,6 +43,8 @@ module ActiveRecordFormatterHelpers
     end
 
     def group_started(group)
+      @groups_encountered += 1
+
       return unless group.parent_groups.length > 1
 
       active_groups.push(group_path(group))
@@ -77,7 +81,32 @@ module ActiveRecordFormatterHelpers
       if data[:name] == "SQL" && query_is_an_insert?(data[:sql])
         table = data[:sql].scan(/INSERT INTO "(\w+)"/).first.first
         name = "#{table} Create"
+      elsif query_is_a_full_table_delete?(data[:sql])
+        table = data[:sql].scan(/DELETE FROM "(\w+)"/).first.first
+        name = "Full Delete Table"
+      # TODO: truncate table
+      elsif query_is_transaction_management?(data[:sql])
+        name = "Transaction Management"
+      elsif query_is_schema_detection?(data[:sql])
+        name = "SCHEMA"
+      elsif query_is_trigger_management?(data[:sql])
+        name = "Trigger Management"
+      elsif query_refreshes_materialized_view?(data[:sql])
+        name = "Refresh Materialized View"
       end
+
+
+      # In older versions of Rails, insert statements are just counted as SQL
+      # queries, which means that all the queries are just bunchedup at the top.
+      # Makes this data pretty useless. So anyway, try to suss out a name for
+      # at least those insertions (which are much more frequent than, say,
+      # updates in a test suite anyway).
+      #if data[:name].nil? && query_is_a_delete?(data[:sql])
+      #  table = data[:sql].scan(/DELETE FROM "(\w+)"/).first.first
+      #  name = "#{table} Delete"
+      #end
+
+      #@unnamed_queries << data if name == "Unnamed"
 
       query_names[name] += 1
     end
@@ -89,7 +118,32 @@ module ActiveRecordFormatterHelpers
     # TODO: what happens if we try to create many records at once?
     # TODO: are there any false positives we need to worry about? false negatives?
     def query_is_an_insert?(query)
-      query =~ /INSERT INTO/
+      query =~ /^INSERT INTO/
+    end
+
+    def query_is_a_delete?(query)
+      query =~ /^DELETE FROM/
+    end
+
+    def query_is_a_full_table_delete?(query)
+      query =~ /^DELETE FROM [a-z_\."]*;$/i
+    end
+
+    def query_is_transaction_management?(query)
+      query =~ /^(COMMIT|BEGIN|ROLLBACK|SAVEPOINT|RELEASE SAVEPOINT)/
+    end
+
+    def query_is_schema_detection?(query)
+      query =~ /SELECT .* FROM pg_tables/m ||
+        query =~ /SELECT .* FROM information_schema.views/
+    end
+
+    def query_is_trigger_management?(query)
+      query =~ /(DISABLE|ENABLE) TRIGGER ALL/m
+    end
+
+    def query_refreshes_materialized_view?(query)
+      query =~ /REFRESH MATERIALIZED VIEW/m
     end
   end
 end

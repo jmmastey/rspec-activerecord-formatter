@@ -26,6 +26,7 @@ module ActiveRecordFormatterHelpers
 
       File.open(file_path, "wb") do |f|
         f.puts "#{collector.total_objects} AR objects, #{collector.total_queries} AR queries"
+        f.puts "#{collector.groups_encountered} example groups executed"
 
         f.puts ""
         f.puts "Worst Example Groups by Object Creation"
