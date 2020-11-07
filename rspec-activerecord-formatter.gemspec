@@ -6,7 +6,7 @@ $LOAD_PATH << lib_dir unless $LOAD_PATH.include?(lib_dir)
 Gem::Specification.new do |gem|
 
   gem.name    = "rspec-activerecord-formatter"
-  gem.version = "2.1.0"
+  gem.version = "2.1.1"
 
   gem.summary     = "Adds object creations and queries to Rspec output."
   gem.description = "Creates a new formatter for ActiveRecord that can help you diagnose performance issues in RSpec"
