@@ -6,4 +6,6 @@
 
 - Added better detection for query types. Specifically, it's easier now to see
   how `database_cleaner` impacts your total queries.
+- Pin dependencies a bit more closely.
 - Adding a changelog, apparently.
+
