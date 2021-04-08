@@ -6,7 +6,7 @@ $LOAD_PATH << lib_dir unless $LOAD_PATH.include?(lib_dir)
 Gem::Specification.new do |gem|
 
   gem.name    = "rspec-activerecord-formatter"
-  gem.version = "2.1.1"
+  gem.version = "2.2.0"
 
   gem.summary     = "Adds object creations and queries to Rspec output."
   gem.description = "Creates a new formatter for ActiveRecord that can help you diagnose performance issues in RSpec"
@@ -25,9 +25,8 @@ Gem::Specification.new do |gem|
 
   gem.require_paths = %w[ext lib].select { |dir| File.directory?(dir) }
 
-  # TODO: these are almost certainly too restrictive looking backward
   gem.add_dependency "activesupport", ">= 4.0", "< 7.0"
-  gem.add_dependency "rspec", "~> 3.4"
+  gem.add_dependency "rspec", ">= 3.4"
 
   gem.add_development_dependency "coveralls", "~> 0.8"
 end

@@ -45,19 +45,14 @@ You'll also get a summary at the end of your test run:
 
 ![Test summary.](https://github.com/jmmastey/rspec-activerecord-formatter/raw/master/doc/images/demo_1.png "Test summary.")
 
+The formatter will spit out a report with more data at the end of your run:
+
+
 If you want less granularity, you can also use the progress formatter:
 
     --require rspec-activerecord-formatter
     --require rails_helper
     --format ActiveRecordProgressFormatter
-
-Next Steps
-------------
-* The method I was using to count AR objects doesn't work well with DatabaseCleaner when not explicitly wiring the library into `before` blocks.
-  I'd like to be able to go back to a method other than scanning for `INSERT INTO` strings.
-* Configuration, especially formatting the output to optionally outdent the counts.
-* The current dependency versions are a vague guess. They can and should clearly be more lenient.
-* I dunno, tests.
 
 Contributing
 ------------
