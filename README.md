@@ -1,5 +1,3 @@
-Forked from JMastey temporarily to bump version support to Rails 7
-
 RSpec Active Record Formatter
 =============
 
