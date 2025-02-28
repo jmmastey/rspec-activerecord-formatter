@@ -22,7 +22,7 @@ module ActiveRecordFormatterHelpers
     end
 
     def write_file(file_path:)
-      Dir.mkdir(report_dir) unless File.exists?(report_dir)
+      Dir.mkdir(report_dir) unless File.exist?(report_dir)
 
       File.open(file_path, "wb") do |f|
         f.puts "#{collector.total_objects} AR objects, #{collector.total_queries} AR queries"
